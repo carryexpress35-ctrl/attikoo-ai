@@ -51,6 +51,7 @@ Rispondi solo con il JSON, senza testo aggiuntivo.`
 
     console.log('RISPOSTA GREZZA:', raw);
 
+    // Estrai il blocco JSON dalla risposta
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) {
       console.error('JSON non trovato nella risposta AI');
