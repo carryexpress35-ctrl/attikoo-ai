@@ -5,9 +5,18 @@ export default async function handler(req, res) {
 
   const { prompt } = req.body;
 
-  if (!prompt || typeof prompt !== 'string') {
+  if (
+    !prompt ||
+    typeof prompt !== 'object' ||
+    !prompt.titolo ||
+    !prompt.descrizione
+  ) {
     return res.status(400).json({ error: 'Prompt mancante o non valido' });
   }
+
+  const testo = `Titolo: ${prompt.titolo}
+Descrizione: ${prompt.descrizione}
+Categoria originale: ${prompt.categoria_originale || 'N/D'}`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -21,11 +30,11 @@ export default async function handler(req, res) {
         messages: [
           {
             role: 'system',
-            content: 'Sei un esperto valutatore di oggetti usati per un marketplace di baratto. Riceverai un titolo e una descrizione. Rispondi usando la funzione "valutaOggetto".'
+            content: 'Sei un esperto valutatore di oggetti usati per un marketplace di baratto. Riceverai un titolo, una descrizione e una categoria. Rispondi usando la funzione "valutaOggetto".'
           },
           {
             role: 'user',
-            content: prompt
+            content: testo
           }
         ],
         functions: [
