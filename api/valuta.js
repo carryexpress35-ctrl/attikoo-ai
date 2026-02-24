@@ -17,48 +17,61 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4-0613',
         messages: [
           {
             role: 'system',
-            content: `Sei un esperto valutatore di oggetti usati per un marketplace di baratto. Riceverai un prompt con titolo, descrizione e categorie. Rispondi solo in JSON con i seguenti campi:
-{
-  "valore_euro": "range di prezzo stimato in euro, es. '20–30'",
-  "categoria": "una delle categorie suggerite nel prompt",
-  "rarita": "Comune, Raro o Molto raro",
-  "descrizione": "breve descrizione sintetica dell'oggetto (max 200 caratteri)"
-}
-
-Rispondi solo con il JSON, senza testo aggiuntivo.`
+            content: 'Sei un esperto valutatore di oggetti usati per un marketplace di baratto. Riceverai un titolo e una descrizione. Rispondi usando la funzione "valutaOggetto".'
           },
           {
             role: 'user',
             content: prompt
           }
         ],
+        functions: [
+          {
+            name: 'valutaOggetto',
+            description: 'Valuta un oggetto usato per un marketplace di baratto',
+            parameters: {
+              type: 'object',
+              properties: {
+                valore_euro: {
+                  type: 'string',
+                  description: "Range di prezzo stimato in euro, es. '20–30'"
+                },
+                categoria: {
+                  type: 'string',
+                  description: 'Una delle categorie suggerite nel prompt'
+                },
+                rarita: {
+                  type: 'string',
+                  enum: ['Comune', 'Raro', 'Molto raro'],
+                  description: 'Livello di rarità'
+                },
+                descrizione: {
+                  type: 'string',
+                  description: "Breve descrizione sintetica dell'oggetto (max 200 caratteri)"
+                }
+              },
+              required: ['valore_euro', 'categoria', 'rarita', 'descrizione']
+            }
+          }
+        ],
+        function_call: { name: 'valutaOggetto' },
         temperature: 0.7,
         max_tokens: 500
       })
     });
 
     const data = await response.json();
-    const raw = data.choices?.[0]?.message?.content;
+    const args = data.choices?.[0]?.message?.function_call?.arguments;
 
-    if (!raw) {
-      console.error('Risposta AI vuota');
-      return res.status(500).json({ error: 'Risposta AI vuota' });
+    if (!args) {
+      console.error('Function call non riuscita o vuota');
+      return res.status(500).json({ error: 'Function call non riuscita o vuota' });
     }
 
-    console.log('RISPOSTA GREZZA:', raw);
-
-    // Estrai il blocco JSON dalla risposta
-    const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) {
-      console.error('JSON non trovato nella risposta AI');
-      return res.status(500).json({ error: 'JSON non trovato nella risposta AI' });
-    }
-
-    const valutazione = JSON.parse(match[0]);
+    const valutazione = JSON.parse(args);
     return res.status(200).json(valutazione);
   } catch (error) {
     console.error('Errore nella valutazione AI:', error);
