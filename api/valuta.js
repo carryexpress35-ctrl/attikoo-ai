@@ -21,7 +21,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: 'system',
-            content: `Sei un esperto valutatore di oggetti usati per un marketplace di baratto. Riceverai un prompt con titolo, descrizione e categorie. Rispondi in JSON con i seguenti campi:
+            content: `Sei un esperto valutatore di oggetti usati per un marketplace di baratto. Riceverai un prompt con titolo, descrizione e categorie. Rispondi solo in JSON con i seguenti campi:
 {
   "valore_euro": "range di prezzo stimato in euro, es. '20–30'",
   "categoria": "una delle categorie suggerite nel prompt",
@@ -29,13 +29,7 @@ export default async function handler(req, res) {
   "descrizione": "breve descrizione sintetica dell'oggetto (max 200 caratteri)"
 }
 
-Esempio:
-{
-  "valore_euro": "15–25",
-  "categoria": "Abbigliamento e Accessori",
-  "rarita": "Raro",
-  "descrizione": "Vestito etnico moderno con motivi tradizionali, ideale per eventi culturali."
-}`
+Rispondi solo con il JSON, senza testo aggiuntivo.`
           },
           {
             role: 'user',
@@ -57,7 +51,6 @@ Esempio:
 
     console.log('RISPOSTA GREZZA:', raw);
 
-    // Estrai il blocco JSON dalla risposta
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) {
       console.error('JSON non trovato nella risposta AI');
