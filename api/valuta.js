@@ -1,5 +1,3 @@
-console.log("CHIAVE GROQ:", process.env.GROQ_API_KEY);
-
 import Groq from "groq-sdk";
 
 export default async function handler(req, res) {
