@@ -1,4 +1,4 @@
-console.log("CHIAVE GROQ:", process.env.GROQ_API_KEY ? "PRESENTE" : "ASSENTE");
+console.log("CHIAVE GROQ:", process.env.GROQ_API_KEY);
 
 import Groq from "groq-sdk";
 
