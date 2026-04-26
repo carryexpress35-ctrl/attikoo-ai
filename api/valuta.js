@@ -1,3 +1,5 @@
+console.log("GROQ KEY:", process.env.GROQ_API_KEY ? "OK" : "MISSING");
+
 import Groq from "groq-sdk";
 
 const client = new Groq({
