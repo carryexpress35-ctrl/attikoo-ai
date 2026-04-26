@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
   // Controllo variabile ambiente
   if (!process.env.GROQ_API_KEY) {
-    console.error("❌ Manca GROQ_API_KEY nelle variabili ambiente");
+    console.error("Manca GROQ_API_KEY nelle variabili ambiente");
     return res.status(500).json({ error: "Chiave API Groq mancante" });
   }
 
@@ -80,7 +80,7 @@ Il JSON finale deve avere ESATTAMENTE questa struttura:
     try {
       parsed = JSON.parse(raw);
     } catch (e) {
-      console.error("❌ JSON non valido generato dal modello:", raw);
+      console.error("JSON non valido generato dal modello:", raw);
       return res.status(500).json({
         error: "Risposta AI non in formato JSON",
         raw
